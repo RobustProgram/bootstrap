@@ -595,7 +595,9 @@
           if (eventOut === _this5.constructor.Event.FOCUSOUT) {
             var tip = $(_this5.getTipElement());
             tip.on('mousedown', function () {
-              $(this).addClass('triggered');
+              if (!tip.hasClass('triggered')) {
+                tip.addClass('triggered');
+              }
             });
             tip.on('mouseleave', function () {
               $(_this5.element).focus();

@@ -525,8 +525,10 @@ class Tooltip {
         if (eventOut === this.constructor.Event.FOCUSOUT) {
           const tip = $(this.getTipElement())
 
-          tip.on('mousedown', function () {
-            $(this).addClass('triggered')
+          tip.on('mousedown', () => {
+            if (!tip.hasClass('triggered')) {
+              tip.addClass('triggered')
+            }
           })
 
           tip.on('mouseleave', () => {
