@@ -1,7 +1,7 @@
 /*!
   * Bootstrap v4.5.0 (https://getbootstrap.com/)
   * Copyright 2011-2020 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
-  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('jquery'), require('popper.js')) :
@@ -86,7 +86,7 @@
   /**
    * --------------------------------------------------------------------------
    * Bootstrap (v4.5.0): util.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
   /**
@@ -557,11 +557,9 @@
         return;
       }
 
-      if (initialButton.tagName === 'LABEL' && inputBtn && inputBtn.type === 'checkbox') {
-        event.preventDefault(); // work around event sent to label and input
+      if (initialButton.tagName !== 'LABEL' || inputBtn && inputBtn.type !== 'checkbox') {
+        Button._jQueryInterface.call($(button), 'toggle');
       }
-
-      Button._jQueryInterface.call($(button), 'toggle');
     }
   }).on(EVENT_FOCUS_BLUR_DATA_API, SELECTOR_DATA_TOGGLE_CARROT, function (event) {
     var button = $(event.target).closest(SELECTOR_BUTTON)[0];
@@ -2305,6 +2303,8 @@
 
       this._element.setAttribute('aria-modal', true);
 
+      this._element.setAttribute('role', 'dialog');
+
       if ($(this._dialog).hasClass(CLASS_NAME_SCROLLABLE) && modalBody) {
         modalBody.scrollTop = 0;
       } else {
@@ -2391,6 +2391,8 @@
       this._element.setAttribute('aria-hidden', true);
 
       this._element.removeAttribute('aria-modal');
+
+      this._element.removeAttribute('role');
 
       this._isTransitioning = false;
 
@@ -2661,7 +2663,7 @@
   /**
    * --------------------------------------------------------------------------
    * Bootstrap (v4.5.0): tools/sanitizer.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
   var uriAttrs = ['background', 'cite', 'href', 'itemtype', 'longdesc', 'poster', 'src', 'xlink:href'];
@@ -3227,6 +3229,16 @@
           }).on(eventOut, _this5.config.selector, function (event) {
             return _this5._leave(event);
           });
+
+          if (eventOut === _this5.constructor.Event.FOCUSOUT) {
+            var tip = $(_this5.getTipElement());
+            tip.on('mousedown', function () {
+              $(this).addClass('triggered');
+            });
+            tip.on('mouseleave', function () {
+              $(_this5.element).focus();
+            });
+          }
         }
       });
 
@@ -3293,6 +3305,12 @@
     _proto._leave = function _leave(event, context) {
       var dataKey = this.constructor.DATA_KEY;
       context = context || $(event.currentTarget).data(dataKey);
+      var tip = $(this.getTipElement());
+
+      if (tip.hasClass('triggered')) {
+        tip.removeClass('triggered');
+        return;
+      }
 
       if (!context) {
         context = new this.constructor(event.currentTarget, this._getDelegateConfig());

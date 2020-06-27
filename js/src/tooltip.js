@@ -521,6 +521,18 @@ class Tooltip {
         $(this.element)
           .on(eventIn, this.config.selector, (event) => this._enter(event))
           .on(eventOut, this.config.selector, (event) => this._leave(event))
+
+        if (eventOut === this.constructor.Event.FOCUSOUT) {
+          const tip = $(this.getTipElement())
+
+          tip.on('mousedown', function () {
+            $(this).addClass('triggered')
+          })
+
+          tip.on('mouseleave', () => {
+            $(this.element).focus()
+          })
+        }
       }
     })
 
@@ -598,6 +610,13 @@ class Tooltip {
   _leave(event, context) {
     const dataKey = this.constructor.DATA_KEY
     context = context || $(event.currentTarget).data(dataKey)
+
+    const tip = $(this.getTipElement())
+
+    if (tip.hasClass('triggered')) {
+      tip.removeClass('triggered')
+      return
+    }
 
     if (!context) {
       context = new this.constructor(
