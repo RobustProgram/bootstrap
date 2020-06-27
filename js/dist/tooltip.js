@@ -600,6 +600,10 @@
               }
             });
             tip.on('mouseleave', function () {
+              if (tip.hasClass('triggered')) {
+                tip.removeClass('triggered');
+              }
+
               $(_this5.element).focus();
             });
           }

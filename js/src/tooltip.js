@@ -532,6 +532,9 @@ class Tooltip {
           })
 
           tip.on('mouseleave', () => {
+            if (tip.hasClass('triggered')) {
+              tip.removeClass('triggered')
+            }
             $(this.element).focus()
           })
         }
